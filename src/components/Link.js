@@ -28,13 +28,10 @@ const Link = (index, link, description, updateStoreAfterVote ) => {
   const [ res, executeMutation ] = useMutation(VOTE_MUTATION);
   const authToken = localStorage.getItem(AUTH_TOKEN)
   
-  console.log('link.votes', link.votes)
-  console.log('link:', link);
-  console.log('link.postedBy:', link.postedBy);
   return (
     <div className="flex mt2 items-start">
       <div className="flex items-center">
-        <span className="gray">{index + 1}.</span>
+        {/* <span className="gray">{index + 1}.</span> */}
         {authToken && (
           <Mutation
             mutation={VOTE_MUTATION}
