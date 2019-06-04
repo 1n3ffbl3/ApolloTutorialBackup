@@ -45,25 +45,11 @@ const wsLink = new WebSocketLink({
   }
 })
 
-const link = split(
-  ({ query }) => {
-    const { kind, operation } = getMainDefinition(query)
-    return kind === 'OperationDefinition' && operation === 'subscription'
-  },
-  wsLink,
-  authLink.concat(httpLink)
-)
 
-const client = new ApolloClient({
-  link,
-  cache: new InMemoryCache()
-})
 
 ReactDOM.render(
     <BrowserRouter>
-        <ApolloProvider client={client}>
-            <App />
-        </ApolloProvider>
+      <App />
     </BrowserRouter>,
   document.getElementById('root')
 )

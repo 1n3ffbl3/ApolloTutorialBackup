@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { AUTH_TOKEN } from '../constants'
 import { timeDifferenceForDate } from '../utils'
 import { Mutation, useMutation } from 'urql'
@@ -28,6 +28,7 @@ const Link = (index, link, description, updateStoreAfterVote ) => {
   const [ res, executeMutation ] = useMutation(VOTE_MUTATION);
   const authToken = localStorage.getItem(AUTH_TOKEN)
   
+  console.log('link.votes', link.votes)
   console.log('link:', link);
   console.log('link.postedBy:', link.postedBy);
   return (
