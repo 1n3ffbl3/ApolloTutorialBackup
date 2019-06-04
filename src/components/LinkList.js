@@ -1,8 +1,9 @@
 import React, { Fragment } from 'react';
 import { useQuery } from 'urql';
+import gql from 'fraql';
 
 
-export const FEED_QUERY = `
+export const FEED_QUERY = gql`
   query FeedQuery($first: Int, $skip: Int, $orderBy: LinkOrderByInput) {
     feed(first: $first, skip: $skip, orderBy: $orderBy) {
       links {
