@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Header from './Header';
-import { Switch, Route, Redirect } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import LinkList from './LinkList';
 import CreateLink from './CreateLink';
 import Login from './Login';
@@ -16,9 +16,9 @@ const client = createClient({
 const App = () => {
   return (
     <Provider value={client}>
-      <div className="center w85">
+      <div className='center w85'>
         <Header />
-        <div className="ph3 pv1 background-gray">
+        <div className='ph3 pv1 background-gray'>
           <Switch>
             <Route exact path='/' component={LinkList} />
             <Route exact path='/create' component={CreateLink} />
@@ -31,7 +31,7 @@ const App = () => {
       </div>
     </Provider>
   )
-}
+};
 
 
-export default App
+export default App;
