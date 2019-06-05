@@ -1,10 +1,12 @@
 import React from 'react'
-import { AUTH_TOKEN } from '../constants'
+import { AUTH_TOKEN, LINKS_PER_PAGE } from '../constants'
 import { timeDifferenceForDate } from '../utils'
 import { Mutation, useMutation } from 'urql'
+import { FEED_QUERY } from './LinkList';
+import gql from 'fraql';
 
 
-const VOTE_MUTATION = `
+const VOTE_MUTATION = gql`
   mutation VoteMutation($linkId: ID!) {
     vote(linkId: $linkId) {
       id
@@ -24,22 +26,40 @@ const VOTE_MUTATION = `
 `
 
 
-const Link = (index, link, description, updateStoreAfterVote ) => {
+const Link = ({index, link, location, match}) => {
   const [ res, executeMutation ] = useMutation(VOTE_MUTATION);
-  const authToken = localStorage.getItem(AUTH_TOKEN)
+  const updateStoreAfterVote = (store, createVote, linkId) => {
+    const isNewPage = location.pathname.includes('new')
+    const page = parseInt(match.params.page, 10)
   
+    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0
+    const first = isNewPage ? LINKS_PER_PAGE : 100
+    const orderBy = isNewPage ? 'createdAt_DESC' : null
+    const data = store.readQuery({
+      query: FEED_QUERY,
+      variables: { first, skip, orderBy }
+    })
+  
+    const votedLink = data.feed.links.find(link => link.id === linkId)
+    votedLink.votes = createVote.link.votes
+    store.writeQuery({ query: FEED_QUERY, data })
+  }
+  const authToken = localStorage.getItem(AUTH_TOKEN)
+
+  if (res.error) {
+    console.log(res.error);
+    return 'Oh no!';
+  }
+
   return (
     <div className="flex mt2 items-start">
       <div className="flex items-center">
-        {/* <span className="gray">{index + 1}.</span> */}
         {authToken && (
           <Mutation
             mutation={VOTE_MUTATION}
             variables={{ linkId: link.id }}
-            update={(store, { data: { vote } }) =>
-              updateStoreAfterVote(store, vote, link.id)
-            }>
-            {voteMutation => (
+            update={(store, { data: { vote } }) =>{updateStoreAfterVote(store, vote, link.id)}}>
+            {( voteMutation ) => (
               <div className="ml1 gray f11" onClick={() => executeMutation({linkId: link.id})}>
                 ▲
               </div>
@@ -49,7 +69,7 @@ const Link = (index, link, description, updateStoreAfterVote ) => {
       </div>
       <div className="ml1">
         <div>
-          {description} ({link.url})
+          {link.desciption} ({link.url})
         </div>
         <div className="f6 lh-copy gray">
           {link.length} votes | by{' '}
@@ -58,9 +78,9 @@ const Link = (index, link, description, updateStoreAfterVote ) => {
             : 'Unknown'}{' '}
           {timeDifferenceForDate(link.createdAt)}
         </div>
-      </div>
+      </div> 
     </div>
   )
 }
 
-export default Link
+export default Link;

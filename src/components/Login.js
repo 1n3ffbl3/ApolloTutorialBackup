@@ -1,12 +1,10 @@
 import React, { useState } from 'react'
 import { AUTH_TOKEN } from '../constants'
-import { useMutation } from 'urql';
-import { Mutation } from 'react-apollo'
+import { Mutation, useMutation } from 'urql';
+import gql from 'fraql';
 
 
-
-
-const SIGNUP_MUTATION = `
+const SIGNUP_MUTATION = gql`
   mutation SignupMutation($email: String!, $password: String!, $name: String!) {
     signup(email: $email, password: $password, name: $name) {
       token
@@ -14,7 +12,7 @@ const SIGNUP_MUTATION = `
   }
 `
 
-const LOGIN_MUTATION = `
+const LOGIN_MUTATION = gql`
   mutation LoginMutation($email: String!, $password: String!) {
     login(email: $email, password: $password) {
       token
@@ -23,15 +21,25 @@ const LOGIN_MUTATION = `
 `
 
 
-const Login = () => {
-
-
+const Login = ({ history }) => {
   const [ login, setLogin ] = useState(true);// switch between Login and SignUp
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ name, setName ] = useState('');
-  const [ res, executeMutation] = useMutation(SIGNUP_MUTATION);
+  const [ res, executeMutation] = useMutation(login ? LOGIN_MUTATION : SIGNUP_MUTATION);
 
+
+  const confirm = (data, login) => {
+    console.log(`confirm: ${JSON.stringify(data)}`)
+    const { token } = login ? data.login : data.signup
+    localStorage.setItem(AUTH_TOKEN, token)
+    history.push(`/`)
+  }
+
+  console.log(res);
+  if (!res.fetching && res.data) {
+    confirm(res.data, login);
+  }
 
   return (
     <div>
@@ -55,15 +63,9 @@ const Login = () => {
           placeholder="Choose a safe password"/>
       </div>
       <div className="flex mt3">
-        <Mutation
-          mutation={login ? LOGIN_MUTATION : SIGNUP_MUTATION}
-          variables={{ email, password, name }}
-          onCompleted={data => this._confirm(data)}>
-          {mutation => (
-            <div className="pointer mr2 button" onClick={() => executeMutation({})}>
-              {login ? 'login' : 'create account'}
-            </div>)}
-        </Mutation>
+        <div className="pointer mr2 button" onClick={() => executeMutation({name, password, email})}>
+            {login ? 'login' : 'create account'}
+        </div>
         <div
           className="pointer button"
           onClick={() => setLogin(!login)}>
@@ -73,15 +75,5 @@ const Login = () => {
     </div>
   )
 }
-
-  const _confirm = async data => {
-    const { token } = this.state.login ? data.login : data.signup
-    this._saveUserData(token)
-    this.props.history.push(`/`)
-  }
-
-  const _saveUserData = token => {
-    localStorage.setItem(AUTH_TOKEN, token)
-  }
 
 export default Login

@@ -1,7 +1,11 @@
 import React, { Fragment } from 'react';
-import { useQuery } from 'urql';
+import { useQuery, Query } from 'urql';
 import gql from 'fraql';
+import fnfy from 'fnfy';
+import Link from './Link';
 
+
+const div = fnfy('div');
 
 export const FEED_QUERY = gql`
   query FeedQuery($first: Int, $skip: Int, $orderBy: LinkOrderByInput) {
@@ -28,35 +32,31 @@ export const FEED_QUERY = gql`
 `;
 
 
-const  LinkList = () => {
+const LinkList = ({location, match}) => {
   const [ res ] = useQuery({
     query: FEED_QUERY,
   })
 
-  if (res.fetching || res.data == null) {
-    return 'Loading...';
+  if (res.fetching || !res.data) {
+    return 'Loading...'
+  } else if (res.error) {
+    console.log(res.error);
+    return 'Oh no!'
   }
 
-  const fetchedData = res.data.feed.links;
+  const links = res.data.feed.links;
   return (
-    <Fragment>
-      {fetchedData.map(link=> (
-        <div className="ml1">
-          <div>
-             ({link.url})
-          </div>
-          <div className="f6 lh-copy gray">
-            {link.length} votes | by{' '}
-            {link.postedBy
-            ? link.postedBy.name
-            : 'Unknown'}{' '}
-            {link.desciption} {(link.createdAt)}
-        </div>
-      </div>
-      ))}
-    </Fragment>
-  );
-}
+    <div>
+      {
+        links.map(( link, index ) => {
+          return (
+            <Link link={link} location={location} match={match} />
+          )
+        })
+      }
+    </div>
+  )
+};
 
 
 export default LinkList
