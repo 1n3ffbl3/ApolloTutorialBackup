@@ -20,30 +20,45 @@ const Header = ({ history }) => {
           Link({
             className: 'ml1 no-underline black',
             to: '/top',
-            children: 'top'
+            children: 'top',
           }),
           div({
             className: 'ml1',
-            children: '|'
+            children: '|',
           }),
           div({
             className: 'fw7 mr1',
-            children: 'Hacker News'
+            children: 'Hacker News',
           }),
           Link({
             className: 'ml1 no-underline black',
             to: '/',
-            children: 'new'
+            children: 'new',
           }),
           div({
             className: 'ml1',
-            children: '|'
+            children: '|',
           }),
           Link({
             className: 'ml1 no-underline black',
-            to: '/create',
-            children: 'submit'
+            to: '/search',
+            children: 'search',
           }),
+          authToken && (
+            div({
+              children: [
+                div({
+                  className: 'ml1',
+                  children: '|',
+                }),
+                Link({
+                  className: 'ml1 no-underline black',
+                  to: '/create',
+                  children: 'submit',
+                }),
+              ]
+            })
+          )
         ]
       }),
       div({
@@ -55,13 +70,13 @@ const Header = ({ history }) => {
               onClick: () => {
                 localStorage.removeItem(AUTH_TOKEN)
                 history.push(`/`)},
-              children: 'logout'
+              children: 'logout',
             })
           ) : (
             Link({
               className: 'ml1 no-underline black',
               to: '/login',
-              children: 'login'
+              children: 'login',
             })
           )
         ]
