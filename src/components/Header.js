@@ -1,54 +1,74 @@
-import React, { Component } from 'react'
-import { Link } from 'react-router-dom'
-import { withRouter } from 'react-router'
-import { AUTH_TOKEN } from '../constants'
+import { Link as _Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
+import { AUTH_TOKEN } from '../constants';
+import fnfy from 'fnfy';
 
 
-class Header extends Component {
-    render() {
-        const authToken = localStorage.getItem(AUTH_TOKEN)
-        return (
-          <div className="flex pa1 justify-between nowrap orange">
-            <div className="flex flex-fixed black">
-              <Link to="/top" className="ml1 no-underline black">
-               top
-              </Link>
-              <div className="ml1">|</div>
-              <div className="fw7 mr1">Hacker News</div>
-              <Link to="/" className="ml1 no-underline black">
-                new
-              </Link>
-              <div className="ml1">|</div>
-              <Link to="/search" className="ml1 no-underline black">
-                search
-              </Link>
-              {authToken && (
-                <div className="flex">
-                  <div className="ml1">|</div>
-                  <Link to="/create" className="ml1 no-underline black">
-                    submit
-                  </Link>
-                </div>
-              )}
-            </div>
-            <div className="flex flex-fixed">
-              {authToken ? (
-                <div
-                  className="ml1 pointer black"
-                  onClick={() => {
-                    localStorage.removeItem(AUTH_TOKEN)
-                    this.props.history.push(`/`)}}>
-                  logout
-                </div>
-              ) : (
-                <Link to="/login" className="ml1 no-underline black">
-                  login
-                </Link>
-              )}
-            </div>
-          </div>
-        )
-    }
-}
+const div = fnfy('div');
+const Link = fnfy(_Link);
 
-export default withRouter(Header)
+
+const Header = ({ history }) => {
+  const authToken = localStorage.getItem(AUTH_TOKEN);
+
+  return div({
+    className: 'flex pa1 justify-between nowrap orange',
+    children: [
+      div({
+        className: 'flex flex-fixed black',
+        children: [
+          Link({
+            className: 'ml1 no-underline black',
+            to: '/top',
+            children: 'top'
+          }),
+          div({
+            className: 'ml1',
+            children: '|'
+          }),
+          div({
+            className: 'fw7 mr1',
+            children: 'Hacker News'
+          }),
+          Link({
+            className: 'ml1 no-underline black',
+            to: '/',
+            children: 'new'
+          }),
+          div({
+            className: 'ml1',
+            children: '|'
+          }),
+          Link({
+            className: 'ml1 no-underline black',
+            to: '/create',
+            children: 'submit'
+          }),
+        ]
+      }),
+      div({
+        className: 'flex flex-fixed',
+        children: [
+          authToken ? (
+            div({
+              className: 'ml1 pointer black',
+              onClick: () => {
+                localStorage.removeItem(AUTH_TOKEN)
+                history.push(`/`)},
+              children: 'logout'
+            })
+          ) : (
+            Link({
+              className: 'ml1 no-underline black',
+              to: '/login',
+              children: 'login'
+            })
+          )
+        ]
+      })
+    ]
+  })
+};
+
+
+export default fnfy(withRouter(Header));

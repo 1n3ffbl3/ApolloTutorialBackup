@@ -1,8 +1,13 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { AUTH_TOKEN } from '../constants'
-import { Mutation, useMutation } from 'urql';
+import { useMutation } from 'urql';
 import gql from 'fraql';
+import fnfy from 'fnfy';
 
+
+const div = fnfy('div');
+const input = fnfy('input');
+const h4 = fnfy('h4');
 
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation($email: String!, $password: String!, $name: String!) {
@@ -36,44 +41,60 @@ const Login = ({ history }) => {
     history.push(`/`)
   }
 
-  console.log(res);
   if (!res.fetching && res.data) {
     confirm(res.data, login);
   }
 
-  return (
-    <div>
-      <h4 className="mv3">{login ? 'Login' : 'Sign Up'}</h4>
-      <div className="flex flex-column">
-        {!login && (
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            type="text"
-            placeholder="Your name"/>)}
-        <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="text"
-          placeholder="Your email address"/>
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password"
-          placeholder="Choose a safe password"/>
-      </div>
-      <div className="flex mt3">
-        <div className="pointer mr2 button" onClick={() => executeMutation({name, password, email})}>
-            {login ? 'login' : 'create account'}
-        </div>
-        <div
-          className="pointer button"
-          onClick={() => setLogin(!login)}>
-          {login ? 'need to create an account?' : 'already have an account?'}
-        </div>
-      </div>
-    </div>
-  )
-}
+  return div({
+    children:[
+      h4({
+        className: 'mv3',
+        children: [(login ? 'Login' : 'Sign Up')]
+      }),
+      div({
+        className: 'flex flex-column',
+        children: [
+          !login && ( input({
+            value: name,
+            onChange: (e) => setName(e.target.value),
+            type: 'text',
+            placeholder: 'Your name',
+          })),
+          input({
+            value: email,
+            onChange: (e) => setEmail(e.target.value),
+            type: 'text',
+            placeholder: 'Your email address',
+          }),
+          input({
+            value: password,
+            onChange: (e) => setPassword(e.target.value),
+            type: 'password',
+            placeholder: 'Choose a safe password',
+          })
+        ]
+      }),
+      div({
+        className: 'flex mt3',
+        chidren: [
+          div({
+            className: 'pointer mr2 button',
+            onClick: () => executeMutation({ name, password, email }),
+            children: [
+              (login ? 'login' : 'create account')
+            ]
+          }),
+          div({
+            className: 'pointer button',
+            onClick: () => setLogin(!login),
+            children: [
+              (login ? 'need to create an account?' : 'already have an account?')
+            ]
+          })
+        ]
+      })
+    ]
+  })
+};
 
 export default Login
