@@ -6,10 +6,19 @@ import CreateLink from './CreateLink';
 import Login from './Login';
 import Search from './Search';
 import { Provider, createClient } from 'urql';
+import { AUTH_TOKEN } from '../constants'
 
 
 const client = createClient({
   url: 'http://localhost:4000',
+  fetchOptions: () => {
+    const token = localStorage.getItem(AUTH_TOKEN);
+    return {
+      headers: {
+        authorization: token ? `Bearer ${token}` : '' ,
+      },
+    };
+  },
 });
 
 
