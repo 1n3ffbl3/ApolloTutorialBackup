@@ -1,13 +1,12 @@
 import { AUTH_TOKEN, LINKS_PER_PAGE } from '../constants';
 import { timeDifferenceForDate } from '../utils';
-import { Mutation as _Mutation, useMutation } from 'urql';
+import { useMutation } from 'urql';
 import { FEED_QUERY } from './LinkList';
 import gql from 'fraql';
 import fnfy from 'fnfy';
 
 
 const div = fnfy('div');
-const Mutation = fnfy(_Mutation);
 
 
 const VOTE_MUTATION = gql`
@@ -56,23 +55,26 @@ const Link = ({index, link, location, match}) => {
     store.writeQuery({ query: FEED_QUERY, data })
   }
 
+  // console.log(`res.data ${JSON.stringify(res.data ? res.data.vote : null)}`);
+  // if (!res.fetching && res.data) {
+  //   const vote = res.data.vote;
+  //   updateStoreAfterVote(vote, link.id);
+  // }
+
+  const voteCount = link.votes ? link.votes.length : 0;
+
   return div({
     className: 'flex mt2 items-start',
     children:[
       div({
         className: 'flex items-center',
         children: authToken && ( 
-          Mutation({
-            mutation: VOTE_MUTATION,
-            variables: { linkId: link.id },
-            update: (store, { data: { vote } }) => {
-              updateStoreAfterVote(store, vote, link.id)},
-            children: voteMutation => ( div({
-              className: 'ml1 gray f11',
-              onClick: () => executeMutation({linkId: link.id}),
-              children:  '▲'
-            }))
-        }))
+          div({
+            className: 'ml1 gray f11',
+            onClick: () => executeMutation({linkId: link.id}),
+            children:  '▲'
+          })  
+        )
       }),
       div({
         className: 'ml1',
@@ -83,7 +85,7 @@ const Link = ({index, link, location, match}) => {
           div({
             className: 'f6 lh-copy gray',
             children:[
-              link.length, ( 'votes | by  '),
+              link.length, ( `votes ${voteCount} | by ` ),
               (link.postedBy
               ? link.postedBy.name
               : 'Unknown '), 
