@@ -44,21 +44,15 @@ const Header = ({ history }) => {
             to: '/search',
             children: 'search',
           }),
-          authToken && (
-            div({
-              children: [
-                div({
-                  className: 'ml1',
-                  children: '|',
-                }),
-                Link({
-                  className: 'ml1 no-underline black',
-                  to: '/create',
-                  children: 'submit',
-                }),
-              ]
-            })
-          )
+          authToken && 
+          div({
+            className: 'ml1',
+            children: Link({
+              className: 'ml1 no-underline black',
+              to: '/create',
+              children: ' | submit',
+            }),
+          }),
         ]
       }),
       div({
