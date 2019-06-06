@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { AUTH_TOKEN } from '../constants'
 import { useMutation } from 'urql';
 import gql from 'fraql';
@@ -8,6 +8,7 @@ import fnfy from 'fnfy';
 const div = fnfy('div');
 const input = fnfy('input');
 const h4 = fnfy('h4');
+
 
 const SIGNUP_MUTATION = gql`
   mutation SignupMutation($email: String!, $password: String!, $name: String!) {
@@ -27,7 +28,7 @@ const LOGIN_MUTATION = gql`
 
 
 const Login = ({ history }) => {
-  const [ login, setLogin ] = useState(true);// switch between Login and SignUp
+  const [ login, setLogin ] = useState(true);
   const [ email, setEmail ] = useState('');
   const [ password, setPassword ] = useState('');
   const [ name, setName ] = useState('');
@@ -35,7 +36,6 @@ const Login = ({ history }) => {
 
 
   const confirm = (data, login) => {
-    console.log(`confirm: ${JSON.stringify(data)}`)
     const { token } = login ? data.login : data.signup
     localStorage.setItem(AUTH_TOKEN, token)
     history.push(`/`)
@@ -76,20 +76,16 @@ const Login = ({ history }) => {
       }),
       div({
         className: 'flex mt3',
-        chidren: [
+        children: [
           div({
             className: 'pointer mr2 button',
             onClick: () => executeMutation({ name, password, email }),
-            children: [
-              (login ? 'login' : 'create account')
-            ]
+            children: (<span>{login ? 'login' : 'create account'}</span>)
           }),
           div({
             className: 'pointer button',
             onClick: () => setLogin(!login),
-            children: [
-              (login ? 'need to create an account?' : 'already have an account?')
-            ]
+            children: (<span>{login ? 'need to create an account?' : 'already have an account?'}</span>)
           })
         ]
       })
