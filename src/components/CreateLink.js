@@ -24,19 +24,13 @@ const POST_MUTATION = gql`
 `;
 
 
-const CreateLink = ( history, store, post ) => {
+const CreateLink = ( history ) => {
   const [ description, setDescription ] = useState('');
   const [ url, setUrl ] = useState('');
   const [ res, executeMutation] = useMutation(POST_MUTATION);
 
 
-  if (res.error) {
-    console.log(res.error);
-    return 'Oh no!';
-  };
-
-
-  const updateMutation = (store,  { data: { post } }) => {
+  const updateMutation = (store, post) => {
     const first = LINKS_PER_PAGE
     const skip = 0
     const orderBy = 'createdAt_DESC'
@@ -52,6 +46,11 @@ const CreateLink = ( history, store, post ) => {
     })
   };
 
+  console.log(`res.data ${JSON.stringify(res.data ? res.data.vote : null)}`)
+  if (!res.fetching && res.data){
+    updateMutation(store, post) // TODO: try to figure out how to pass store & post form query                     
+  }
+
 
   return div({
     children: [
@@ -59,9 +58,9 @@ const CreateLink = ( history, store, post ) => {
         className: 'flex flex-column mt3',
         children:[
           input({
-            lassName: 'mb2',
+            className: 'mb2',
             value: description,
-            onChange:(e) => setDescription(e.target.value),
+            onChange: (e) => setDescription(e.target.value),
             type: 'text',
             placeholder: 'A description for the link'
           }),
@@ -74,17 +73,24 @@ const CreateLink = ( history, store, post ) => {
           })
         ]
       }),
-      Mutation({
-        mutation: POST_MUTATION,
-        variables: { description, url },
+      //now
+      div({
         onCompleted: () => history.push('/new/1'),
-        update: updateMutation(store, { data: { post } }),
-        children: postMutation => button({
-          onClick: () => executeMutation({}),
-          children: 'Submit'
-        }),
-          
+        onClick: () => executeMutation({ description, url }),
+        children: 'Submit'
       })
+      // before
+      // Mutation({
+      //   query: POST_MUTATION,
+      //   variables: { description, url },
+      //   onCompleted: () => history.push('/new/1'),
+      //   update: (store, { data: { post } }) => {
+      //     updateMutation(store, post)},
+      //   children: postMutation => button({
+      //     onClick: () => executeMutation({POST_MUTATION}),
+      //     children: 'Submit'
+      //   }),
+      // })
     ]    
   })
 };

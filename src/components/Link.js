@@ -55,11 +55,11 @@ const Link = ({index, link, location, match}) => {
     store.writeQuery({ query: FEED_QUERY, data })
   }
 
-  // console.log(`res.data ${JSON.stringify(res.data ? res.data.vote : null)}`);
-  // if (!res.fetching && res.data) {
-  //   const vote = res.data.vote;
-  //   updateStoreAfterVote(vote, link.id);
-  // }
+  
+  if (!res.fetching && res.data) {
+    const vote = res.data.vote;
+    updateStoreAfterVote(store, vote, link.id);  // TODO: try to figure out how to pass store form query                                                           
+  }                                              
 
   const voteCount = link.votes ? link.votes.length : 0;
 
